@@ -17,15 +17,21 @@ type OrderCard struct {
 }
 
 
+
+func RemoveLetters(s string) string {
+	// Takes a string and returns only numbers
+	re := regexp.MustCompile(`[^a-zA-Z0-9 ]+`)
+	delete_str := re.ReplaceAllString(s, "")
+	return strings.Replace(delete_str, " ", "", 4)
+}
+
+
 func ReformatPrice(price string) (string, error){
-	// Reformat price. Delete all spaces and letters.
+	// Takes a price and deletes all spaces and letters.
 	if price == "договорная"{
 		return price, nil
 	} else{
-	re := regexp.MustCompile(`[^a-zA-Z0-9 ]+`)
-	cleanedPrice := re.ReplaceAllString(price, "")
-	cleanedPrice = strings.Replace(cleanedPrice, " ", "", 4)
-	
+	cleanedPrice := RemoveLetters(price)
 	s, _ := strconv.Atoi(cleanedPrice);
 	
 	if s >= 50000 {
@@ -36,8 +42,26 @@ func ReformatPrice(price string) (string, error){
 }	
 
 
+func GetPagesAmount(url string) []string {
+	// Takes colly instance and url. Then just takes pages amount from website
+	var amount []string
+	envFile, _ := godotenv.Read(".env")
+	c := colly.NewCollector()
+	c.UserAgent = envFile["USER_AGENT"]
+
+    c.OnHTML(".pagination", func(c *colly.HTMLElement) {
+        req := c.ChildText(".pagination a")[4:]
+		remove_str := RemoveLetters(req)
+        amount = append(amount, remove_str)
+    })
+    c.Visit(url)
+    c.Wait()
+    return amount
+  }
+
+  
 func Scraper() {
-	// Function for parsing page
+	// Function for parsing pages.
 	envFile, _ := godotenv.Read(".env")
 
 	// TODO: Change page number for pagination. 
@@ -47,6 +71,9 @@ func Scraper() {
 
 	c := colly.NewCollector()
 	c.UserAgent = envFile["USER_AGENT"]
+
+	pages_amount := GetPagesAmount(url)
+	fmt.Println(pages_amount)
 
 	c.OnHTML(".task_list", func(h *colly.HTMLElement) {
 		title := h.ChildText(".task__title")
