@@ -49,14 +49,14 @@ func GetPagesAmount(url string) []string {
 	c := colly.NewCollector()
 	c.UserAgent = envFile["USER_AGENT"]
 
-    c.OnHTML(".pagination", func(c *colly.HTMLElement) {
-        req := c.ChildText(".pagination a")[4:]
+	c.OnHTML(".pagination", func(c *colly.HTMLElement) {
+	req := c.ChildText(".pagination a")[4:]
 		remove_str := RemoveLetters(req)
-        amount = append(amount, remove_str)
-    })
-    c.Visit(url)
-    c.Wait()
-    return amount
+	amount = append(amount, remove_str)
+	})
+	c.Visit(url)
+	c.Wait()
+	return amount
   }
 
   
