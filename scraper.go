@@ -63,43 +63,54 @@ func GetPagesAmount(url string) []string {
 func Scraper() {
 	// Function for parsing pages.
 	envFile, _ := godotenv.Read(".env")
-
-	// TODO: Change page number for pagination. 
 	var cards []OrderCard
-	url := envFile["URL"]
-	market_url := envFile["MARKET_URL"]
 
-	c := colly.NewCollector()
-	c.UserAgent = envFile["USER_AGENT"]
+	
+	pagesAmount := GetPagesAmount(envFile["URL"])
 
-	pages_amount := GetPagesAmount(url)
-	fmt.Println(pages_amount)
+	if len(pagesAmount) > 0 {
+        maxPages, err := strconv.Atoi(pagesAmount[0])
+        if err != nil {
+            fmt.Println("Invalid page number:", pagesAmount[0])
+            return
+        }
+	
+	for page := 1; page < maxPages+1; page++ {
+		fmt.Println(page)
+		url := envFile["URL"] + "page=" + strconv.Itoa(page)
+		market_url := envFile["MARKET_URL"]
 
-	c.OnHTML(".task_list", func(h *colly.HTMLElement) {
-		title := h.ChildText(".task__title")
-		price := h.ChildText(".task__price")
-		created_at := h.ChildText(".params__published-at")
-		link := market_url + h.ChildAttr(".task__title a", "href")
-		formattedPrice, err := ReformatPrice(price)
+		c := colly.NewCollector()
+		c.UserAgent = envFile["USER_AGENT"]
 
-		if err != nil {
-			fmt.Println("Error reformatting price:", err)
-      		return
-		}
-		if formattedPrice != ""{
-			card := OrderCard{
-				Title: title,
-				Price: price,
-				CreatedAt: created_at,
-				Link: fmt.Sprintf(market_url, link),
+
+		c.OnHTML(".task_list", func(h *colly.HTMLElement) {
+			title := h.ChildText(".task__title")
+			price := h.ChildText(".task__price")
+			created_at := h.ChildText(".params__published-at")
+			link := market_url + h.ChildAttr(".task__title a", "href")
+			formattedPrice, err := ReformatPrice(price)
+
+			if err != nil {
+				fmt.Println("Error reformatting price:", err)
+				return
 			}
-			cards = append(cards, card)
+			if formattedPrice != ""{
+				card := OrderCard{
+					Title: title,
+					Price: price,
+					CreatedAt: created_at,
+					Link: fmt.Sprintf(market_url, link),
+				}
+				cards = append(cards, card)
+			}
+			// output. TODO: save in json or send to TGbot
+			fmt.Println(cards) 
+		})
+		c.Visit(url)
 		}
-		// output. TODO: save in json or send to TGbot
-		fmt.Println(cards) 
-	})
-	c.Visit(url)
-}
+	
+}}
 
 
 func main() {
