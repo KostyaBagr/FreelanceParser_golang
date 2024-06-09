@@ -62,12 +62,11 @@ func GetPagesAmount(url string) []string {
   
 func Scraper() {
 	// Function for parsing pages.
-	envFile, _ := godotenv.Read(".env")
+
 	var cards []OrderCard
+	envFile, _ := godotenv.Read(".env")
 
-	
 	pagesAmount := GetPagesAmount(envFile["URL"])
-
 	if len(pagesAmount) > 0 {
         maxPages, err := strconv.Atoi(pagesAmount[0])
         if err != nil {
@@ -79,11 +78,9 @@ func Scraper() {
 		fmt.Println(page)
 		url := envFile["URL"] + "page=" + strconv.Itoa(page)
 		market_url := envFile["MARKET_URL"]
-
 		c := colly.NewCollector()
 		c.UserAgent = envFile["USER_AGENT"]
-
-
+		
 		c.OnHTML(".task_list", func(h *colly.HTMLElement) {
 			title := h.ChildText(".task__title")
 			price := h.ChildText(".task__price")
