@@ -8,10 +8,9 @@ import (
 
 func StartKeyboard() (*telego.ReplyKeyboardMarkup, error){
 	keyboard := tu.Keyboard(
-		tu.KeyboardRow( // Row 1
-			tu.KeyboardButton("Начать парсинг"), // Column 1
+		tu.KeyboardRow( 
+			tu.KeyboardButton("Начать парсинг"), 
 		),
-
 	).WithResizeKeyboard().WithInputFieldPlaceholder("Select something")
 	return keyboard, nil
 }

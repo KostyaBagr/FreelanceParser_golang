@@ -14,6 +14,7 @@ import (
 func botHandlers(bh *th.BotHandler){
 	// Function keeps all bot handlers.
 	keyboard, _ := StartKeyboard()
+	
 	bh.Handle(func(bot *telego.Bot, update telego.Update) {
 		// Handels start event.
 		_, _ = bot.SendMessage(tu.Messagef(
