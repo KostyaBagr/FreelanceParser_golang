@@ -17,7 +17,6 @@ type OrderCard struct {
 }
 
 
-
 func RemoveLetters(s string) string {
 	// Takes a string and returns only numbers
 	re := regexp.MustCompile(`[^a-zA-Z0-9 ]+`)
@@ -106,10 +105,9 @@ func Scraper() {
 		})
 		c.Visit(url)
 		}
-	
 }}
 
 
-func main() {
-	Scraper()
-}
+// func main() {
+// 	Scraper()
+// }
