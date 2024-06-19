@@ -27,7 +27,7 @@ func botHandlers(bh *th.BotHandler){
 		// Handels info event.
 		bot.SendMessage(tu.Messagef(
 			tu.ID(update.Message.Chat.ID), 
-				`Этот бот разработан @kostyabagr на языке Golang.
+				`Этот бот разработан @kostya_IT на языке Golang.
 			Бот парсит сайт habr freelance с заказами на тему бекенда, ботов, скриптов и т.п`,
 		).WithReplyMarkup(keyboard))
 	}, th.CommandEqual("info"))
