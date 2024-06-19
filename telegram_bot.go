@@ -17,12 +17,48 @@ func botHandlers(bh *th.BotHandler){
 	
 	bh.Handle(func(bot *telego.Bot, update telego.Update) {
 		// Handels start event.
-		_, _ = bot.SendMessage(tu.Messagef(
+		bot.SendMessage(tu.Messagef(
 			tu.ID(update.Message.Chat.ID),
-			"Hello %s!", update.Message.From.FirstName,
+			"Привет %s!", update.Message.From.FirstName, 
 		).WithReplyMarkup(keyboard))
 	}, th.CommandEqual("start"))
+
+	bh.Handle(func(bot *telego.Bot, update telego.Update) {
+		// Handels info event.
+		bot.SendMessage(tu.Messagef(
+			tu.ID(update.Message.Chat.ID), 
+				`Этот бот разработан @kostyabagr на языке Golang.
+			Бот парсит сайт habr freelance с заказами на тему бекенда, ботов, скриптов и т.п`,
+		).WithReplyMarkup(keyboard))
+	}, th.CommandEqual("info"))
+
+	bh.Handle(func(bot *telego.Bot, update telego.Update) {
+		// Handels parsing event.
+
+		bot.SendMessage(tu.Messagef(
+			tu.ID(update.Message.Chat.ID), 
+				"Ожидайте, пожалуйста",
+		))
+
+		data, _ := Scraper()
+		for _, val := range data{
+			message := fmt.Sprintf(
+				"Название: %s\nЦена: %s\n%s\n%s",
+				val.Title,
+				val.Price,
+				val.Link,
+				val.CreatedAt,
+			)
+			bot.SendMessage(tu.Messagef(
+				tu.ID(update.Message.Chat.ID),
+				message,
+			))
+		}
+
+		
+	}, th.TextEqual("Начать парсинг"))
 }
+
 
 
 func main() {

@@ -13,7 +13,10 @@ import (
 
 
 type OrderCard struct {
-	Title, Price, CreatedAt, Link string 
+	Title string  
+	Price string
+	CreatedAt string
+	Link string 
 }
 
 
@@ -59,7 +62,7 @@ func GetPagesAmount(url string) []string {
   }
 
   
-func Scraper() {
+func Scraper() ([]OrderCard, error){
 	// Function for parsing pages.
 
 	var cards []OrderCard
@@ -70,11 +73,11 @@ func Scraper() {
         maxPages, err := strconv.Atoi(pagesAmount[0])
         if err != nil {
             fmt.Println("Invalid page number:", pagesAmount[0])
-            return
+            return cards, err
         }
 	
-	for page := 1; page < maxPages+1; page++ {
-		fmt.Println(page)
+	for page := 1; page < maxPages-10; page++ {
+
 		url := envFile["URL"] + "page=" + strconv.Itoa(page)
 		market_url := envFile["MARKET_URL"]
 		c := colly.NewCollector()
@@ -96,16 +99,19 @@ func Scraper() {
 					Title: title,
 					Price: price,
 					CreatedAt: created_at,
-					Link: fmt.Sprintf(market_url, link),
+					Link: link,
 				}
 				cards = append(cards, card)
 			}
 			// output. TODO: save in json or send to TGbot
-			fmt.Println(cards) 
+			// fmt.Println(cards) 
 		})
 		c.Visit(url)
 		}
-}}
+	return cards, nil
+}
+return cards, fmt.Errorf("no pages found")
+}
 
 
 // func main() {
