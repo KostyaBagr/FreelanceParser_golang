@@ -42,40 +42,14 @@ func ReformatPrice(price string) (string, error){
 	return "", nil
 	}
 }	
-
-
-func GetPagesAmount(url string) []string {
-	// Takes colly instance and url. Then just takes pages amount from website
-	var amount []string
-	envFile, _ := godotenv.Read(".env")
-	c := colly.NewCollector()
-	c.UserAgent = envFile["USER_AGENT"]
-
-	c.OnHTML(".pagination", func(c *colly.HTMLElement) {
-	req := c.ChildText(".pagination a")[4:]
-		remove_str := RemoveLetters(req)
-	amount = append(amount, remove_str)
-	})
-	c.Visit(url)
-	c.Wait()
-	return amount
-  }
-
   
+
 func Scraper(page_num int) ([]OrderCard, error){
 	// Function for parsing pages.
 
 	var cards []OrderCard
 	envFile, _ := godotenv.Read(".env")
 
-	// pagesAmount := GetPagesAmount(envFile["URL"])
-	// if len(pagesAmount) > 0 {
-    //     maxPages, err := strconv.Atoi(pagesAmount[0])
-    //     if err != nil {
-    //         fmt.Println("Invalid page number:", pagesAmount[0])
-    //         return cards, err
-    //     }
-	
 	for page := 1; page < page_num +1 ; page++ {
 
 		url := envFile["URL"] + "page=" + strconv.Itoa(page)
@@ -103,16 +77,9 @@ func Scraper(page_num int) ([]OrderCard, error){
 				}
 				cards = append(cards, card)
 			}
-			// output. TODO: save in json or send to TGbot
-			// fmt.Println(cards) 
 		})
 		c.Visit(url)
 		}
 	return cards, nil
 }
 
-
-
-// func main() {
-// 	Scraper()
-// }
