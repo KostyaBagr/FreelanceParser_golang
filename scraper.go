@@ -62,21 +62,21 @@ func GetPagesAmount(url string) []string {
   }
 
   
-func Scraper() ([]OrderCard, error){
+func Scraper(page_num int) ([]OrderCard, error){
 	// Function for parsing pages.
 
 	var cards []OrderCard
 	envFile, _ := godotenv.Read(".env")
 
-	pagesAmount := GetPagesAmount(envFile["URL"])
-	if len(pagesAmount) > 0 {
-        maxPages, err := strconv.Atoi(pagesAmount[0])
-        if err != nil {
-            fmt.Println("Invalid page number:", pagesAmount[0])
-            return cards, err
-        }
+	// pagesAmount := GetPagesAmount(envFile["URL"])
+	// if len(pagesAmount) > 0 {
+    //     maxPages, err := strconv.Atoi(pagesAmount[0])
+    //     if err != nil {
+    //         fmt.Println("Invalid page number:", pagesAmount[0])
+    //         return cards, err
+    //     }
 	
-	for page := 1; page < maxPages-10; page++ {
+	for page := 1; page < page_num +1 ; page++ {
 
 		url := envFile["URL"] + "page=" + strconv.Itoa(page)
 		market_url := envFile["MARKET_URL"]
@@ -110,8 +110,7 @@ func Scraper() ([]OrderCard, error){
 		}
 	return cards, nil
 }
-return cards, fmt.Errorf("no pages found")
-}
+
 
 
 // func main() {
